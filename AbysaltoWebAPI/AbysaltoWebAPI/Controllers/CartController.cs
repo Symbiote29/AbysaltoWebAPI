@@ -106,5 +106,73 @@ namespace AbysaltoWebAPI.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("items/{itemId}")]
+        public async Task<IActionResult> RemoveItemsFromCart(Guid itemId)
+        {
+            var item = await _context.cartItems.FirstOrDefaultAsync(c => c.itemId == itemId);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var cart = await _context.carts.Include(c => c.items).FirstOrDefaultAsync(c => c.cartId == item.cartId);
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            _context.cartItems.Remove(item);
+            cart.updatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();  
+
+            var response = new CartResponseDTO{
+                cartId = cart.cartId,
+                userId = cart.userId,
+                responseItems = cart.items.Select(i => new CartItemResponseDTO
+                {
+                    cartItemId = i.itemId,
+                    productId = i.productId,
+                    productName = i.productName,
+                    quantity = i.quantity,
+                    itemPrice = i.itemPrice,
+                }).ToList(),
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{cartId}")]
+        public async Task<IActionResult> DeleteEntireUserCart(Guid cartId)
+        {
+            var cart = await _context.carts.FirstOrDefaultAsync(c => c.cartId == cartId);
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            _context.carts.Remove(cart);
+            cart.updatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            var response = new CartResponseDTO
+            {
+                cartId = cart.cartId,
+                userId = cart.userId,
+                responseItems = cart.items.Select(i => new CartItemResponseDTO
+                {
+                    cartItemId = i.itemId,
+                    productId = i.productId,
+                    productName = i.productName,
+                    quantity = i.quantity,
+                    itemPrice = i.itemPrice,
+                }).ToList(),
+            };
+
+            return Ok(response);
+        }
     }
 }
