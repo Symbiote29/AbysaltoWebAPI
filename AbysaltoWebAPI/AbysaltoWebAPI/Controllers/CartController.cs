@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AbysaltoWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using AbysaltoWebAPI.Security;
 
 namespace AbysaltoWebAPI.Controllers
 {
@@ -17,6 +18,7 @@ namespace AbysaltoWebAPI.Controllers
             _context = context;
         }
 
+        [ApiKey]
         [HttpPost("items")]
         public async Task<IActionResult> AddEditCartItem([FromBody] AddCartItemDTO request)
         {
@@ -80,6 +82,7 @@ namespace AbysaltoWebAPI.Controllers
             });
         }
 
+        [ApiKey]
         [HttpGet("cart/{userId}")]
         public async Task<IActionResult> CheckItemsInCart(int userId)
         {
@@ -107,6 +110,7 @@ namespace AbysaltoWebAPI.Controllers
             return Ok(response);
         }
 
+        [ApiKey]
         [HttpDelete("items/{itemId}")]
         public async Task<IActionResult> RemoveItemsFromCart(Guid itemId)
         {
@@ -144,6 +148,7 @@ namespace AbysaltoWebAPI.Controllers
             return Ok(response);
         }
 
+        [ApiKey]
         [HttpDelete("{cartId}")]
         public async Task<IActionResult> DeleteEntireUserCart(Guid cartId)
         {
