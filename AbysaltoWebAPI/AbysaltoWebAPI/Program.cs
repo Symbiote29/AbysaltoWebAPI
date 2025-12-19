@@ -10,8 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("AbysaltoShoppingCartDb"));
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -41,6 +39,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddHealthChecks().AddDbContextCheck<ApiContext>();
+builder.Services.AddDbContext<ApiContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
