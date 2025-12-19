@@ -13,6 +13,6 @@ namespace AbysaltoWebAPI.Models
         public int quantity { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
-        public Cart cart { get; set; } = new();
+        public Cart? cart { get; set; }
     }
 }

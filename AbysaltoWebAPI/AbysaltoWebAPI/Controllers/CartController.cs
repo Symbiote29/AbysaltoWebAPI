@@ -57,6 +57,7 @@ namespace AbysaltoWebAPI.Controllers
                     updatedAt = DateTime.UtcNow,
                 });
 
+                cart.items.Add(newItem);
                 _context.cartItems.Add(newItem);
             }
 
@@ -64,7 +65,19 @@ namespace AbysaltoWebAPI.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(request);
+            return Ok(new CartResponseDTO
+            {
+                cartId = cart.cartId,
+                userId = cart.userId,
+                responseItems = cart.items.Select(i => new CartItemResponseDTO
+                {
+                    cartItemId = i.itemId,
+                    productId = i.productId,
+                    productName = i.productName,
+                    itemPrice = i.itemPrice,
+                    quantity = i.quantity,
+                }).ToList(),
+            });
         }
 
         [HttpGet("cart/{userId}")]
@@ -77,7 +90,21 @@ namespace AbysaltoWebAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(cart);
+            var response = new CartResponseDTO
+            {
+                cartId = cart.cartId,
+                userId = userId,
+                responseItems = cart.items.Select(i => new CartItemResponseDTO
+                {
+                    cartItemId = i.itemId,
+                    productId = i.productId,
+                    productName = i.productName,
+                    itemPrice = i.itemPrice,
+                    quantity = i.quantity,
+                }).ToList(),
+            };
+
+            return Ok(response);
         }
     }
 }
