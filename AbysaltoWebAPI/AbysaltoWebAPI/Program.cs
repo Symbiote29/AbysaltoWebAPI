@@ -3,6 +3,8 @@ using AbysaltoWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using AbysaltoWebAPI.Security;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+builder.Services.AddHealthChecks().AddDbContextCheck<ApiContext>();
 
 var app = builder.Build();
 
@@ -53,6 +56,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseMiddleware<ApiKeyMiddleware>();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 

@@ -12,6 +12,12 @@
 
         public async Task InvokeAsync(HttpContext context, IConfiguration config)
         {
+            if (context.Request.Path.StartsWithSegments("/health"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.Request.Headers.TryGetValue(APIKEY_HEADER_NAME, out var extractedApiKey))
             {
                 context.Response.StatusCode = 401;
