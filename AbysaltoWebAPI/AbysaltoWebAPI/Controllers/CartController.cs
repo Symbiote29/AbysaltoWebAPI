@@ -64,7 +64,20 @@ namespace AbysaltoWebAPI.Controllers
 
             await _context.SaveChangesAsync();
 
-            return new JsonResult(Ok(request));
+            return Ok(request);
+        }
+
+        [HttpGet("cart/{userId}")]
+        public async Task<IActionResult> CheckItemsInCart(int userId)
+        {
+            var cart = await _context.carts.Include(c => c.items).FirstOrDefaultAsync(c => c.userId == userId);
+
+            if(cart == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cart);
         }
     }
 }
